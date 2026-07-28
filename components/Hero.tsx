@@ -6,7 +6,7 @@ import type { MouseEvent } from "react";
 
 const stats = [
   {
-    value: "40+",
+    value: "30+",
     label: "Members",
   },
   {
