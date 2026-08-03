@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum StaffRole {
+  GUEST
+  HELPER
+  TRYOUT_HOST
+  MODERATOR
+  HEAD_MODERATOR
+  ADMIN
+  HEAD_ADMIN
+  MANAGER
+  CO_OWNER
+  OWNER
+}
+
+model RolePreset {
+  id           String  @id @default(cuid())
+  name         String  @unique
+  icon         String
+  description  String
+  displayOrder Int
+  isVisible    Boolean @default(true)
+
+  members StaffMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StaffMember {
+  id          String  @id @default(cuid())
+  discordId   String  @unique
+  displayName String
+  visible     Boolean @default(true)
+
+  roleId String
+  role   RolePreset @relation(fields: [roleId], references: [id])
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ClanWar {
+  id String @id @default(cuid())
+
+  opponent String
+  result   String
+
+  ourScore      Int
+  opponentScore Int
+
+  notes   String?
+  warDate DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  discordId   String?   @unique
+  username    String?
+  displayName String?
+  role        StaffRole @default(GUEST)
+
+  accounts    Account[]
+  sessions    Session[]
+  staffMember StaffMember?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id String @id @default(cuid())
+
+  userId String
+  type   String
+
+  provider          String
+  providerAccountId String
+
+  refresh_token String?
+  access_token  String?
+  expires_at    Int?
+  token_type    String?
+  scope         String?
+  id_token      String?
+  session_state String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id String @id @default(cuid())
+
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

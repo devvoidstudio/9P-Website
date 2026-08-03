@@ -1,7 +1,7 @@
 import About from "@/components/About";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
-import Staff from "@/components/Staff";
+import StaffSection from "@/components/StaffSection";
 import ClanWars from "@/components/ClanWars";
 import Tryouts from "@/components/Tryouts";
 import Footer from "@/components/Footer";
@@ -14,7 +14,7 @@ export default function Home() {
       <main>
         <Hero />
         <About />
-        <Staff />
+        <StaffSection />
         <ClanWars />
         <Tryouts />
         <Footer />

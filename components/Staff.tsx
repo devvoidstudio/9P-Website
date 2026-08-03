@@ -1,31 +1,43 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Crown, Settings, Target } from "lucide-react";
+import {
+  Crown,
+  Gem,
+  Settings,
+  ShieldCheck,
+  Shield,
+  Gavel,
+  Scale,
+  Target,
+  LifeBuoy,
+  CircleUserRound,
+} from "lucide-react";
 
-const staffGroups = [
-  {
-    role: "Owners",
-    icon: Crown,
-    names: "mar & Andrew",
-    description:
-      "Lead the clan, make major decisions, oversee the staff team, and guide the long-term vision of 9P while ensuring the community continues to grow and succeed.",
-  },
-  {
-    role: "Manager",
-    icon: Settings,
-    names: "v0id",
-    description:
-      "Manages the Discord server, website, and technical operations while handling most of the behind-the-scenes development and infrastructure that keeps 9P running smoothly.",
-  },
-  {
-    role: "Tryout Host",
-    icon: Target,
-    names: "MRLEGEND_isaqt",
-    description:
-      "Organizes and hosts tryouts, evaluates new recruits, identifies talented players, and helps build a skilled, active, and competitive community for the future of 9P.",
-  },
-];
+type StaffGroup = {
+  id: string;
+  role: string;
+  icon: string;
+  names: string[];
+  description: string;
+};
+
+type StaffProps = {
+  staffGroups: StaffGroup[];
+};
+
+const iconMap = {
+  Crown,
+  Gem,
+  Settings,
+  ShieldCheck,
+  Shield,
+  Gavel,
+  Scale,
+  Target,
+  LifeBuoy,
+  CircleUserRound,
+};
 
 const headerContainer = {
   hidden: {},
@@ -78,7 +90,7 @@ const cardItem = {
   },
 };
 
-export default function Staff() {
+export default function Staff({ staffGroups }: StaffProps) {
   return (
     <section
       id="staff"
@@ -90,10 +102,7 @@ export default function Staff() {
           variants={headerContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{
-            once: true,
-            amount: 0.35,
-          }}
+          viewport={{ once: true, amount: 0.35 }}
         >
           <motion.p
             variants={headerItem}
@@ -123,24 +132,18 @@ export default function Staff() {
           variants={cardsContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{
-            once: true,
-            amount: 0.2,
-          }}
+          viewport={{ once: true, amount: 0.2 }}
         >
           {staffGroups.map((group) => {
-            const Icon = group.icon;
+            const Icon =
+              iconMap[group.icon as keyof typeof iconMap] ?? CircleUserRound;
 
             return (
               <motion.article
-                key={group.role}
+                key={group.id}
                 variants={cardItem}
-                whileHover={{
-                  y: -8,
-                }}
-                transition={{
-                  duration: 0.25,
-                }}
+                whileHover={{ y: -8 }}
+                transition={{ duration: 0.25 }}
                 className="group overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 transition-colors duration-300 hover:border-red-600 hover:shadow-[0_0_35px_rgba(220,38,38,0.16)]"
               >
                 <div className="relative flex h-24 items-center justify-center overflow-hidden border-b border-red-900/30 bg-gradient-to-b from-red-950/50 via-red-950/20 to-zinc-950">
@@ -160,11 +163,18 @@ export default function Staff() {
                     {group.role}
                   </p>
 
-                  <h3 className="mt-2 break-words text-3xl font-black tracking-tight">
-                    {group.names}
-                  </h3>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {group.names.map((name) => (
+                      <span
+                        key={name}
+                        className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-lg font-black text-white"
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
 
-                  <p className="mt-4 leading-7 text-zinc-400">
+                  <p className="mt-5 leading-7 text-zinc-400">
                     {group.description}
                   </p>
                 </div>
@@ -174,18 +184,9 @@ export default function Staff() {
         </motion.div>
 
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 35,
-          }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-            amount: 0.5,
-          }}
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
           transition={{
             duration: 0.7,
             delay: 0.25,
