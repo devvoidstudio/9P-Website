@@ -51,8 +51,7 @@ async function getDiscordMemberRoles(
   const botToken = process.env.DISCORD_BOT_TOKEN;
 
   if (!guildId || !botToken) {
-    console.error("Missing Discord guild ID or bot token.");
-    return [];
+    throw new Error("Missing Discord guild ID or bot token.");
   }
 
   const response = await fetch(
@@ -91,15 +90,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
-    async signIn({ user, profile }) {
-      const discordProfile = profile as DiscordProfile | undefined;
-      const discordId = discordProfile?.id;
+    async signIn({ account }) {
+      return account?.provider === "discord";
+    },
+  },
 
-      if (!user.id || !discordId) {
-        return false;
+  events: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider !== "discord" || !user.id) {
+        return;
       }
 
-      let staffRole: StaffRole = StaffRole.GUEST;
+      const discordProfile = profile as DiscordProfile | undefined;
+      const discordId = account.providerAccountId;
+
+      let staffRole: StaffRole | undefined;
 
       try {
         const discordRoles = await getDiscordMemberRoles(discordId);
@@ -114,17 +119,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
         data: {
           discordId,
-          username: discordProfile.username ?? null,
+          username: discordProfile?.username ?? null,
           displayName:
-            discordProfile.global_name ??
-            discordProfile.username ??
+            discordProfile?.global_name ??
+            discordProfile?.username ??
             user.name ??
             null,
-          role: staffRole,
+
+          // If Discord temporarily fails, keep the existing database role.
+          ...(staffRole !== undefined && {
+            role: staffRole,
+          }),
         },
       });
-
-      return true;
     },
   },
 
