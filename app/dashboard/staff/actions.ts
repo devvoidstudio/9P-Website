@@ -47,6 +47,4 @@ export async function toggleStaffVisibility(
 
   revalidatePath("/dashboard/staff");
   revalidatePath("/");
-
-  redirect("/dashboard/staff");
 }
